@@ -1,0 +1,101 @@
+profile:
+  name: "WebApp"
+  description: "Linting profile for WebApp application. Checks dockerfile semantically."
+line_rules:
+  FROM:
+    paramSyntaxRegex: /.+/
+    rules:
+      -
+        label: "is_latest_tag"
+        regex: /latest/
+        level: "info"
+        message: "base image uses 'latest' tag"
+        description: "using the 'latest' tag may cause unpredictable builds. It is recommended that a specific tag is used in the FROM line."
+        reference_url:
+          - "https://docs.docker.com/engine/reference/builder/"
+          - "#from"
+      -
+        label: "no_tag"
+        regex: /[:]/
+        level: "warn"
+        inverse_rule: true
+        message: "No tag is used"
+        description: "No tag is used"
+        reference_url:
+          - "https://docs.docker.com/engine/reference/builder/"
+          - "#from"
+      -
+        label: "using_mcr_official_repository"
+        regex: /mcr.microsoft.com/
+        inverse_rule: true
+        level: "error"
+        message: "Base Image must be from the official mcr registry"
+        description: "Base Image must be from the microsoft registry."
+        reference_url:
+          - "https://github.com/microsoft/containerregistry"
+  RUN: 
+    paramSyntaxRegex: /.+/
+    rules: 
+      - 
+        label: "no_publish_without_trimming"
+        regex: /dotnet publish(?!.+PublishTrimmed=true)/g
+        level: "error"
+        message: "Application artifact must be trimmed when published"
+        description: "The trim-self-contained deployment model is a specialized version of the self-contained deployment model that is optimized to reduce deployment size."
+        reference_url: 
+          - "https://docs.microsoft.com/en-us/dotnet/core/deploying/trim-self-contained"
+      - 
+        label: "no_publish_without_self_contained"
+        regex: /dotnet publish(?!.+self-contained true)/g
+        level: "error"
+        message: "The application must be published as a self contained artifact"
+        description: "Publishing your app as self-contained produces a platform-specific executable. The output publishing folder contains all components of the app, including the .NET libraries and target runtime."
+        reference_url: 
+          - "https://docs.microsoft.com/en-us/dotnet/core/deploying/"
+      - 
+        label: "no_publish_without_single_executable"
+        regex: /dotnet publish(?!.+PublishSingleFile=true)/g
+        level: "error"
+        message: "Application artifact must be published as a single self contained executable"
+        description: "Bundling all application-dependent files into a single binary provides an application developer with the attractive option to deploy and distribute the application as a single file."
+        reference_url: 
+          - "https://docs.microsoft.com/en-us/dotnet/core/deploying/single-file"
+      -
+        label: "dockerfile_must_run_unittests"
+        regex: /dotnet test/
+        inverse_rule: true
+        level: "error"
+        message: "Dockerfile needs to execute the test command. "
+        description: "The dotnet test command is used to execute unit tests in a given solution. You must run the tests before to ascertain that everything works correctly."
+        reference_url:
+          - "https://docs.microsoft.com/es-es/dotnet/core/tools/dotnet-test"
+
+required_instructions: 
+    - 
+      instruction: "MAINTAINER"
+      count: 1
+      level: "error"
+      message: "Maintainer is not defined"
+      description: "The MAINTAINER line is useful for identifying the author in the form of MAINTAINER Joe Smith <joe.smith@example.com>"
+      reference_url: 
+        - "https://docs.docker.com/engine/reference/builder/"
+        - "#maintainer"
+    - 
+      instruction: "EXPOSE"
+      count: 2
+      level: "info"
+      message: "There is no 'EXPOSE' instruction"
+      description: "Without exposed ports how will the service of the container be accessed?"
+      reference_url: 
+        - "https://docs.docker.com/engine/reference/builder/"
+        - "#expose"
+    - 
+      instruction: "ENTRYPOINT"
+      count: 1
+      level: "info"
+      message: "There is no 'ENTRYPOINT' instruction"
+      description: "None"
+      reference_url: 
+        - "https://docs.docker.com/engine/reference/builder/"
+        - "#entrypoint"
+    - 
