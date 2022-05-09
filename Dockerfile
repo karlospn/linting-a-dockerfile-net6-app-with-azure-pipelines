@@ -17,7 +17,7 @@ COPY . ./
 RUN dotnet build "./src/WebApp/WebApp.csproj" -c Release --no-restore
 
 ## Run dotnet test setting the output on the /coverage folder
-RUN dotnet test test/WebApp.Tests/*.csproj --collect:"XPlat Code Coverage" --results-directory ./coverage
+RUN dotnet test test/WebApp.Tests/*.csproj
 
 ## Publish the app
 RUN dotnet publish src/WebApp/*.csproj -c Release -o /app/publish --no-build --no-restore
