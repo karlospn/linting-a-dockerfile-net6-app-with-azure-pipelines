@@ -107,8 +107,8 @@ line_rules:
 required_instructions: 
     - 
       instruction: "EXPOSE"
-      count: 2
-      level: "info"
+      count: 1
+      level: "error"
       message: "There is no 'EXPOSE' instruction"
       description: "Without exposed ports how will the service of the container be accessed?"
       reference_url: 
@@ -117,9 +117,18 @@ required_instructions:
     - 
       instruction: "ENTRYPOINT"
       count: 1
-      level: "info"
+      level: "error"
       message: "There is no 'ENTRYPOINT' instruction"
       description: "None"
       reference_url: 
         - "https://docs.docker.com/engine/reference/builder/"
         - "#entrypoint"
+    - 
+      instruction: "COPY"
+      count: 1
+      level: "error"
+      message: "There is no 'COPY' instruction"
+      description: "None"
+      reference_url: 
+        - "https://docs.docker.com/engine/reference/builder/"
+        - "#copy"
