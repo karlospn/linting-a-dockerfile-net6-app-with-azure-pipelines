@@ -37,13 +37,30 @@ line_rules:
     paramSyntaxRegex: /.+/
     rules: 
       - 
-        label: "no_restore_when_building"
+        label: "use_no_restore_flag_when_running_dotnet_build"
         regex: /dotnet build(?!.+--no-restore)/g
         level: "error"
-        message: "When using dotnet build must use the no-restore flag"
-        description: "When running dotnet build you must use the --no-restore option, to disable implicit restore"
+        message: "When using dotnet build you must use the no-restore flag"
+        description: "When running dotnet build you must use the --no-restore option to disable implicit restore"
         reference_url: 
           - "https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-build"
+      - 
+        label: "use_no_restore_flag_when_running_dotnet_publish"
+        regex: /dotnet publish(?!.+--no-restore)/g
+        level: "error"
+        message: "When running dotnet publish you must use the no-restore flag"
+        description: "When running dotnet publish you must use the --no-restore option to disable implicit restore"
+        reference_url: 
+          - "https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-publish"
+
+      - 
+        label: "use_no_build_flag_when_running_dotnet_publish"
+        regex: /dotnet publish(?!.+--no-restore)/g
+        level: "error"
+        message: "When running dotnet publish you must use the no-build flag"
+        description: "When running dotnet publish you must use the --no-build option to disable implicit build"
+        reference_url: 
+          - "https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-publish"
       - 
         label: "no_publish_without_trimming"
         regex: /dotnet publish(?!.+PublishTrimmed=true)/g
