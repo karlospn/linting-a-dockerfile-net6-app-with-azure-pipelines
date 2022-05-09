@@ -20,9 +20,10 @@ RUN dotnet build "./src/WebApp/WebApp.csproj" \
 	-c Release \
 	--runtime linux-x64 \
 	--no-restore \
+	--self-contained true \
 	/p:PublishSingleFile=true
 
-## Run dotnet test setting the output on the /coverage folder
+## Run unit tests
 RUN dotnet test "./test/WebApp.Tests/WebApp.Tests.csproj" \
 	--no-restore
 
