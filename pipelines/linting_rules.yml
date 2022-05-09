@@ -9,8 +9,8 @@ line_rules:
         label: "is_latest_tag"
         regex: /latest/
         level: "info"
-        message: "base image uses 'latest' tag"
-        description: "using the 'latest' tag may cause unpredictable builds. It is recommended that a specific tag is used in the FROM line"
+        message: "Base image uses 'latest' tag"
+        description: "Using the 'latest' tag may cause unpredictable builds. It is recommended that a specific tag is used in the FROM line"
         reference_url:
           - "https://docs.docker.com/engine/reference/builder/"
           - "#from"
@@ -29,8 +29,8 @@ line_rules:
         regex: /mcr.microsoft.com/
         inverse_rule: true
         level: "error"
-        message: "Base Image must be from the official mcr registry"
-        description: "Base Image must be from the microsoft registry"
+        message: "Base Image must be from the official Microsoft registry"
+        description: "The Official .NET Docker images are Docker images created and optimized by Microsoft. They are publicly available in the Microsoft MCR repository"
         reference_url:
           - "https://github.com/microsoft/containerregistry"
   RUN: 
@@ -41,7 +41,15 @@ line_rules:
         regex: /dotnet build(?!.+--no-restore)/g
         level: "error"
         message: "When using dotnet build you must use the no-restore flag"
-        description: "When running dotnet build you must use the --no-restore option to disable implicit restore"
+        description: "The --no-restore option is used to disable implicit restore, when using the dotnet restore command you don't need to restore the packages a second time" 
+        reference_url: 
+          - "https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-build"
+      - 
+        label: "use_no_restore_flag_when_running_dotnet_test"
+        regex: /dotnet test(?!.+--no-restore)/g
+        level: "error"
+        message: "When using dotnet test you must use the no-restore flag"
+        description: "The --no-restore option is used to disable implicit restore, when using the dotnet restore command you don't need to restore the packages a second time"
         reference_url: 
           - "https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-build"
       - 
@@ -49,16 +57,15 @@ line_rules:
         regex: /dotnet publish(?!.+--no-restore)/g
         level: "error"
         message: "When running dotnet publish you must use the no-restore flag"
-        description: "When running dotnet publish you must use the --no-restore option to disable implicit restore"
+        description: "The --no-restore option is used to disable implicit restore, when using the dotnet restore command you don't need to restore the packages a second time"
         reference_url: 
           - "https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-publish"
-
       - 
         label: "use_no_build_flag_when_running_dotnet_publish"
         regex: /dotnet publish(?!.+--no-restore)/g
         level: "error"
         message: "When running dotnet publish you must use the no-build flag"
-        description: "When running dotnet publish you must use the --no-build option to disable implicit build"
+        description: "The --no-restore option is used to disable implicit restore, when using the dotnet restore command you don't need to restore the packages a second time"
         reference_url: 
           - "https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-publish"
       - 
