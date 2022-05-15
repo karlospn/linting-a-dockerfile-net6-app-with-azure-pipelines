@@ -4,6 +4,9 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /app
 
+## Set the maintainer
+LABEL maintaner=mytechramblings.com
+
 ## Copy the applications .csproj
 COPY /src/WebApp/*.csproj ./src/WebApp/
 
