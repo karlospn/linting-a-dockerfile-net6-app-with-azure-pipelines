@@ -6,25 +6,6 @@ line_rules:
     paramSyntaxRegex: /.+/
     rules:
       -
-        label: "is_latest_tag"
-        regex: /latest/
-        level: "info"
-        message: "Base image uses 'latest' tag"
-        description: "Using the 'latest' tag may cause unpredictable builds. It is recommended that a specific tag is used in the FROM line"
-        reference_url:
-          - "https://docs.docker.com/engine/reference/builder/"
-          - "#from"
-      -
-        label: "no_tag"
-        regex: /[:]/
-        level: "warn"
-        inverse_rule: true
-        message: "No tag is used"
-        description: "No tag is used"
-        reference_url:
-          - "https://docs.docker.com/engine/reference/builder/"
-          - "#from"
-      -
         label: "using_mcr_official_repository"
         regex: /mcr.microsoft.com/
         inverse_rule: true
@@ -53,29 +34,37 @@ line_rules:
         reference_url: 
           - "https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-build"
       - 
-        label: "use_no_restore_flag_when_running_dotnet_publish"
-        regex: /dotnet publish(?!.+--no-restore)/g
-        level: "error"
-        message: "When running dotnet publish you must use the no-restore flag"
-        description: "The --no-restore option is used to disable implicit restore, when using the dotnet restore command you don't need to restore the packages a second time"
-        reference_url: 
-          - "https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-publish"
-      - 
         label: "use_no_build_flag_when_running_dotnet_publish"
-        regex: /dotnet publish(?!.+--no-restore)/g
+        regex: /dotnet publish(?!.+--no-build)/g
         level: "error"
         message: "When running dotnet publish you must use the no-build flag"
-        description: "The --no-restore option is used to disable implicit restore, when using the dotnet restore command you don't need to restore the packages a second time"
+        description: "The --no-build is used to avoid building the project before publishing. It also implicitly sets the --no-restore flag"
         reference_url: 
           - "https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-publish"
       - 
-        label: "no_publish_without_trimming"
-        regex: /dotnet publish(?!.+PublishTrimmed=true)/g
+        label: "no_build_without_single_executable"
+        regex: /dotnet build(?!.+PublishSingleFile=true)/g
         level: "error"
-        message: "Application artifact must be trimmed when published"
-        description: "The trim-self-contained deployment model is a specialized version of the self-contained deployment model that is optimized to reduce deployment size"
+        message: "Application artifact must be published as a single self contained executable"
+        description: "Bundling all application-dependent files into a single binary provides an application developer with the attractive option to deploy and distribute the application as a single file"
         reference_url: 
-          - "https://docs.microsoft.com/en-us/dotnet/core/deploying/trim-self-contained"
+          - "https://docs.microsoft.com/en-us/dotnet/core/deploying/single-file"
+      - 
+        label: "no_publish_without_single_executable"
+        regex: /dotnet publish(?!.+PublishSingleFile=true)/g
+        level: "error"
+        message: "Application artifact must be published as a single self contained executable"
+        description: "Bundling all application-dependent files into a single binary provides an application developer with the attractive option to deploy and distribute the application as a single file"
+        reference_url: 
+          - "https://docs.microsoft.com/en-us/dotnet/core/deploying/single-file"
+      - 
+        label: "no_build_without_self_contained"
+        regex: /dotnet build(?!.+self-contained true)/g
+        level: "error"
+        message: "The application must be published as a self contained artifact"
+        description: "Publishing your app as self-contained produces a platform-specific executable. The output publishing folder contains all components of the app, including the .NET libraries and target runtime"
+        reference_url: 
+          - "https://docs.microsoft.com/en-us/dotnet/core/deploying/"
       - 
         label: "no_publish_without_self_contained"
         regex: /dotnet publish(?!.+self-contained true)/g
@@ -85,25 +74,37 @@ line_rules:
         reference_url: 
           - "https://docs.microsoft.com/en-us/dotnet/core/deploying/"
       - 
-        label: "no_publish_without_single_executable"
-        regex: /dotnet publish(?!.+PublishSingleFile=true)/g
+        label: "no_publish_without_trimming"
+        regex: /dotnet publish(?!.+PublishTrimmed=true)/g
         level: "error"
-        message: "Application artifact must be published as a single self contained executable"
-        description: "Bundling all application-dependent files into a single binary provides an application developer with the attractive option to deploy and distribute the application as a single file"
+        message: "Application artifact must be trimmed when published"
+        description: "The trim-self-contained deployment model is a specialized version of the self-contained deployment model that is optimized to reduce deployment size"
         reference_url: 
-          - "https://docs.microsoft.com/en-us/dotnet/core/deploying/single-file"
-  MAINTAINER:
-    paramSyntaxRegex: /.+/
-    rules:
-      -
-        label: "maintainer_deprecated"
-        regex: /.+/
-        level: "info"
-        message: "the MAINTAINER command is deprecated"
-        description: "MAINTAINER is deprecated in favor of using LABEL since Docker v1.13.0"
-        reference_url:
-          - "https://github.com/docker/cli/blob/master/docs/deprecated.md"
-          - "#maintainer-in-dockerfile"        
+          - "https://docs.microsoft.com/en-us/dotnet/core/deploying/trim-self-contained"   
+      - 
+        label: "no_restore_without_using_linux_x64_runtime"
+        regex: /dotnet restore(?!.+runtime linux-x64)/g
+        level: "error"
+        message: "The application must be publish as a linux-64 platform-specific artifact"
+        description: "The runtime attribute is used to identify the target platforms where the application runs"
+        reference_url: 
+          - "https://docs.microsoft.com/en-us/dotnet/core/rid-catalog"   
+      - 
+        label: "no_build_without_using_linux_x64_runtime"
+        regex: /dotnet build(?!.+runtime linux-x64)/g
+        level: "error"
+        message: "The application must be publish as a linux-64 platform-specific artifact"
+        description: "The runtime attribute is used to identify the target platforms where the application runs"
+        reference_url: 
+          - "https://docs.microsoft.com/en-us/dotnet/core/rid-catalog" 
+      - 
+        label: "no_publish_without_using_linux_x64_runtime"
+        regex: /dotnet publish(?!.+runtime linux-x64)/g
+        level: "error"
+        message: "The application must be publish as a linux-64 platform-specific artifact"
+        description: "The runtime attribute is used to identify the target platforms where the application runs"
+        reference_url: 
+          - "https://docs.microsoft.com/en-us/dotnet/core/rid-catalog"     
 required_instructions: 
     - 
       instruction: "EXPOSE"
